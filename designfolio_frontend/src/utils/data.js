@@ -43,6 +43,7 @@ export const categories = [
     image: 'https://i.pinimg.com/236x/2e/63/c8/2e63c82dfd49aca8dccf9de3f57e8588.jpg',
   },
 ];
+
 export const userQuery=(userId)=>{
     const query=`*[_type=="user" && _id=='${userId}']`;
     return query;
