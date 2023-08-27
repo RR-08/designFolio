@@ -12,6 +12,7 @@ const Login = () => {
     console.log(response);
 
     createOrGetUser(response).then((decode) => {
+      // console.log("Decoded User:", decode);
       const { name, picture, sub } = decode;
       localStorage.setItem("user", JSON.stringify(decode));
       const doc = {
