@@ -1,55 +1,62 @@
-import React, {useState,useEffect} from 'react'
-import { AiOutlineLogout } from 'react-icons/ai'
-import { useParams,useNavigate } from 'react-router-dom'
-import { googleLogout } from "@react-oauth/google"
-import { userCreatedPinsQuery,userSavedPinsQuery, userQuery } from '../utils/data'
-import {client } from '../client'
-import MasonryLayout from './MasonryLayout'
-import Spinner from './Spinner'
+import React, { useState, useEffect } from "react";
+import { AiOutlineLogout } from "react-icons/ai";
+import { useParams, useNavigate } from "react-router-dom";
+// import { GoogleLogout } from "@leecheuk/react-google-login"
+import { googleLogout } from "@react-oauth/google";
+import {
+  userCreatedPinsQuery,
+  userSavedPinsQuery,
+  userQuery,
+} from "../utils/data";
+import { client } from "../client";
+import MasonryLayout from "./MasonryLayout";
+import Spinner from "./Spinner";
 
-const randomImage="https://source.unsplash.com/1600x900/?art"
-const activeBtnStyles='bg-red-500 text-white font-bold p-2 rounded-full w-20 outline-none'
+const randomImage = "https://source.unsplash.com/1600x900/?art";
+const activeBtnStyles =
+  "bg-red-500 text-white font-bold p-2 rounded-full w-20 outline-none";
 const notActiveBtnStyles =
   "bg-primary-500 mr-4 text-black font-bold p-2 rounded-full w-20 outline-none";
 
-
-
 const UserProfile = () => {
-  const [user, setUser ]= useState(null)
-  const [pins,setPins]=useState(null)
-  const [text,setText]= useState('created')
-  const [activeBtn,setActiveBtn] =useState('created')
-  const navigate=useNavigate();
-  const {userId}= useParams();
+  const [user, setUser] = useState(null);
+  const [pins, setPins] = useState(null);
+  const [text, setText] = useState("created");
+  const [activeBtn, setActiveBtn] = useState("created");
+  const navigate = useNavigate();
+  const { userId } = useParams();
 
-  useEffect(()=>{
-    const query = userQuery (userId);
-    client.fetch(query)
-    .then((data)=>{
-      setUser(data[0]);
-    })
-
-  },[userId])
+  const User =
+    localStorage.getItem("user") !== "undefined"
+      ? JSON.parse(localStorage.getItem("user"))
+      : localStorage.clear();
 
   useEffect(() => {
-   if(text==='Created'){
-    const createdPinsQuery= userCreatedPinsQuery(userId)
-    client.fetch(createdPinsQuery)
-    .then((data)=>
-    setPins(data))
+    const query = userQuery(userId);
+    client.fetch(query).then((data) => {
+      setUser(data[0]);
+    });
+  }, [userId]);
 
-   }else{
-    const savedPinsQuery = userSavedPinsQuery(userId);
-    client.fetch(savedPinsQuery).then((data) => setPins(data));
+  const logout = () => {
+    googleLogout();
+    localStorage.clear();
+    navigate("/login");
+  };
 
-   }
-  }, [text,userId]);
+  useEffect(() => {
+    if (text === "Created") {
+      const createdPinsQuery = userCreatedPinsQuery(userId);
+      client.fetch(createdPinsQuery).then((data) => setPins(data));
+    } else {
+      const savedPinsQuery = userSavedPinsQuery(userId);
+      client.fetch(savedPinsQuery).then((data) => setPins(data));
+    }
+  }, [text, userId]);
 
-
-  if(!user){
-    return <Spinner message="Loading Profile"/>
+  if (!user) {
+    return <Spinner message="Loading Profile" />;
   }
-
 
   return (
     <div className="relative pb-2 h-full justify-center items-center">
@@ -70,7 +77,16 @@ const UserProfile = () => {
               {user.userName}
             </h1>
             <div className="absolute top-0 z-1 right-0 p-2">
-              {userId === user._id && <div>Add logout</div>}
+              {/* {console.log(userId," space ",User.sub)} */}
+              {userId === User.sub && (
+                <button
+                  type="button"
+                  className=" bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
+                  onClick={logout}
+                >
+                  <AiOutlineLogout color="red" fontSize={21} />
+                </button>
+              )}
             </div>
           </div>
           <div className="text-center mb-7 ">
@@ -100,19 +116,18 @@ const UserProfile = () => {
             </button>
           </div>
           <div className="px-2">
-          <MasonryLayout pins={pins} />
-        </div>
+            <MasonryLayout pins={pins} />
+          </div>
 
-        {pins?.length === 0 && (
-        <div className="flex justify-center font-bold items-center w-full text-1xl mt-2">
-          No Pins Found!
-        </div>
-        )}
-        
+          {pins?.length === 0 && (
+            <div className="flex justify-center font-bold items-center w-full text-1xl mt-2">
+              No Pins Found!
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default UserProfile
+export default UserProfile;
