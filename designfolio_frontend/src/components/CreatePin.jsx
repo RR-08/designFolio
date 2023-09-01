@@ -48,6 +48,10 @@ const CreatePin = ({ user }) => {
       setWrongImageType(true);
     }
   };
+   const User =
+     localStorage.getItem("user") !== "undefined"
+       ? JSON.parse(localStorage.getItem("user"))
+       : localStorage.clear();
 
   const savePin = () => {
     if (title && about && destination && imageAsset?._id && category) {
@@ -63,16 +67,22 @@ const CreatePin = ({ user }) => {
             _ref: imageAsset?._id,
           },
         },
-        userId: user._id,
+        userId: User.sub,
         postedBy: {
           _type: "postedBy",
-          _ref: user._id,
+          _ref: User.sub,
         },
         category,
       };
       client.create(doc).then(() => {
         navigate("/");
       });
+
+    {
+      console.log(doc);
+    }
+
+
     } else {
       setFields(true);
 

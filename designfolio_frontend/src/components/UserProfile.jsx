@@ -21,7 +21,7 @@ const notActiveBtnStyles =
 const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [pins, setPins] = useState(null);
-  const [text, setText] = useState("created");
+  const [text, setText] = useState("Created");
   const [activeBtn, setActiveBtn] = useState("created");
   const navigate = useNavigate();
   const { userId } = useParams();

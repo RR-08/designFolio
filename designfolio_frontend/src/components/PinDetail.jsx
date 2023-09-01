@@ -8,6 +8,7 @@ import MasonryLayout from "./MasonryLayout";
 import { pinDetailMorePinQuery, pinDetailQuery } from "../utils/data";
 import Spinner from "./Spinner";
 
+
 const PinDetail = ({ user }) => {
   const { pinId } = useParams();
   const [pins, setPins] = useState();
@@ -35,7 +36,14 @@ const PinDetail = ({ user }) => {
   useEffect(() => {
     fetchPinDetails();
   }, [pinId]);
+  
+    const User =
+      localStorage.getItem("user") !== "undefined"
+        ? JSON.parse(localStorage.getItem("user"))
+        : localStorage.clear();
 
+    console.log(User);
+    
   const addComment = () => {
     if (comment) {
       setAddingComment(true);
@@ -47,7 +55,7 @@ const PinDetail = ({ user }) => {
           {
             comment,
             _key: uuidv4(),
-            postedBy: { _type: "postedBy", _ref: user._id },
+            postedBy: { _type: "postedBy", _ref: User.sub },
           },
         ])
         .commit()
@@ -98,16 +106,18 @@ const PinDetail = ({ user }) => {
               </h1>
               <p className="mt-3">{pinDetail.about}</p>
             </div>
+
+            {console.log(pinDetail)}
             <Link
-              to={`/user-profile/${pinDetail?.postedBy._id}`}
+              to={`/user-profile/${pinDetail?.postedBy?._id}`}
               className="flex gap-2 mt-5 items-center bg-white rounded-lg "
             >
               <img
-                src={pinDetail?.postedBy.image}
+                src={pinDetail?.postedBy?.image}
                 className="w-10 h-10 rounded-full"
                 alt="user-profile"
               />
-              <p className="font-bold">{pinDetail?.postedBy.userName}</p>
+              <p className="font-bold">{pinDetail?.postedBy?.userName}</p>
             </Link>
             <h2 className="mt-5 text-2xl">Comments</h2>
             <div className="max-h-370 overflow-y-auto">
@@ -154,7 +164,7 @@ const PinDetail = ({ user }) => {
           </div>
         </div>
       )}
-      {console.log(pins)}
+
       {pins?.length > 0 && (
         <h2 className="text-center font-bold text-2xl mt-8 mb-4">
           More like this
